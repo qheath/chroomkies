@@ -1,0 +1,14 @@
+(env
+ (dev
+  (flags (:standard -w +a-4-48 -warn-error +a)))
+ (release
+  (flags (:standard -w +a))))
+
+(rule
+ (targets .chromium-youtube-cookies.txt)
+ (deps (:main src/main.bc))
+ (action (run %{main} %{targets})))
+
+(alias
+ (name run)
+ (deps .chromium-youtube-cookies.txt))
