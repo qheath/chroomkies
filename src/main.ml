@@ -38,7 +38,7 @@ let parse_args () =
     GetArg.set_string cookiejar ;
   ] and usage =
       Printf.sprintf
-        "usage: %s [-p <domain-pattern>] [-p <cookiejar>] [<output>]"
+        "usage: %s [-p <domain-pattern>] [-c <cookiejar>] [<output>]"
         Sys.argv.(0)
   and set_output s = output := s in
 

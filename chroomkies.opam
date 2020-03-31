@@ -1,0 +1,25 @@
+opam-version: "2.0"
+version: "0.1"
+maintainer: "Quentin Heath <12143333+qheath@users.noreply.github.com>"
+authors: "Quentin Heath <12143333+qheath@users.noreply.github.com>"
+license: "GPL-3"
+build: [
+  ["dune" "build" "-p" name "-j" jobs "@install"]
+  ["dune" "build" "-p" name "-j" jobs "@runtest"] {with-test}
+  ["dune" "build" "-p" name "-j" jobs "@doc"] {with-doc}
+]
+
+depends: [
+  "getarg" {build}
+  "sqlite3" {build}
+  "pbkdf" {build}
+]
+synopsis: "export Chrome cookies"
+description: """
+Evolved clone of [n8henrie]'s Chrome cookies extractor
+
+[n8henrie]: https://n8henrie.com/2014/05/decrypt-chrome-cookies-with-python/"""
+#url {
+#  src: ""
+#  checksum: ""
+#}
