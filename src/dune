@@ -1,4 +1,4 @@
 (executable
  (name main)
- (libraries getarg unix sqlite3 pbkdf)
+ (libraries cmdliner unix sqlite3 pbkdf)
  (modules ("Row" Statement Main)))

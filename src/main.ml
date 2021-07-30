@@ -23,31 +23,7 @@ let make_copy in_file =
   Printf.eprintf "Using temp file %S...\n%!" out_file ;
   out_file
 
-let parse_args () =
-  let pattern = ref "%.youtube.com"
-  and cookiejar =
-    ref (Printf.sprintf "%s/.config/chromium/Default/Cookies"
-           (Sys.getenv "HOME"))
-  and output = ref "-" in
-
-  let longopts = [
-    ('p',"pattern",Printf.sprintf "string pattern to match [%s]" !pattern),
-    GetArg.set_string pattern ;
-
-    ('c',"cookiejar",Printf.sprintf "string cookies database [%s]" !cookiejar),
-    GetArg.set_string cookiejar ;
-  ] and usage =
-      Printf.sprintf
-        "usage: %s [-p <domain-pattern>] [-c <cookiejar>] [<output>]"
-        Sys.argv.(0)
-  and set_output s = output := s in
-
-  GetArg.parse longopts set_output usage ;
-
-  !pattern,!cookiejar,!output
-
-let x =
-  let pattern,cookiejar,output = parse_args () in
+let main pattern cookiejar output =
   let fmt,close =
     if output="-" then
       Format.std_formatter,(fun () -> ())
@@ -64,3 +40,20 @@ let x =
     Printf.eprintf "database busy, trying to close again in 1 second\n%!" ;
     Unix.sleep 1
   done
+
+let () =
+  let pattern =
+    let doc = "pattern to match" in
+    Cmdliner.Arg.(value & opt string "%.youtube.com" & info ["p";"pattern"] ~docv:"domain_pattern" ~doc)
+  and cookiejar =
+    let doc = "cookies database" in
+    let default =
+      Printf.sprintf "%s/.config/chromium/Default/Cookies" (Sys.getenv "HOME")
+    in
+    Cmdliner.Arg.(value & opt file default & info ["c";"cookiejar"] ~docv:"cookiejar_path" ~doc)
+  and output =
+    let doc = "output file" in
+    Cmdliner.Arg.(value & pos 0 string "-" & info [] ~docv:"output_path" ~doc)
+  in
+  let term = Cmdliner.Term.(const main $ pattern $ cookiejar $ output) in
+  Cmdliner.Term.(exit @@ eval (term,(info "chroomkies")))
