@@ -29,14 +29,14 @@ let decipher encrypted_data =
           ~count:iterations
           ~dk_len:(Int32.of_int key_length)
       in
-      Nocrypto.Cipher_block.AES.CBC.of_secret cstruct
+      Mirage_crypto.Cipher_block.AES.CBC.of_secret cstruct
     in
     let iv = String.make key_length ' ' |> Cstruct.of_string in
     let encrypted_cstruct =
       String.sub encrypted_data 3 (length-3) |> Cstruct.of_string
     in
     let padded_clear_cstruct =
-      Nocrypto.Cipher_block.AES.CBC.decrypt ~key ~iv encrypted_cstruct
+      Mirage_crypto.Cipher_block.AES.CBC.decrypt ~key ~iv encrypted_cstruct
     in
     let padded_clear_data = Cstruct.to_string padded_clear_cstruct in
     let length = String.length padded_clear_data in
