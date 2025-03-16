@@ -39,7 +39,8 @@ let main pattern cookiejar output =
   while (not (Sqlite3.db_close db)) do
     Printf.eprintf "database busy, trying to close again in 1 second\n%!" ;
     Unix.sleep 1
-  done
+  done ;
+  Cmdliner.Cmd.Exit.ok
 
 let () =
   let pattern =
@@ -56,4 +57,4 @@ let () =
     Cmdliner.Arg.(value & pos 0 string "-" & info [] ~docv:"output_path" ~doc)
   in
   let term = Cmdliner.Term.(const main $ pattern $ cookiejar $ output) in
-  Cmdliner.Term.(exit @@ eval (term,(info "chroomkies")))
+  Stdlib.exit Cmdliner.Cmd.(eval' (v (info "chroomkies") term))
