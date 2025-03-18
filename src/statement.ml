@@ -7,19 +7,22 @@ let of_domain db domain =
        domain)
 
 let iter cb statement =
-  let rec aux () =
-    match Sqlite3.step statement with
-      | Sqlite3.Rc.ROW ->
-          let row = Sqlite3.row_data statement in
-          cb row ;
-          aux ()
-      | Sqlite3.Rc.DONE -> ()
-      | _ -> Printf.eprintf "something went wrongly\n%!"
+  let rec aux n =
+    if n <> 0 then
+      match Sqlite3.step statement with
+        | Sqlite3.Rc.ROW ->
+            let row = Sqlite3.row_data statement in
+            cb row ;
+            aux (n-1)
+        | Sqlite3.Rc.DONE -> ()
+        | _ -> Printf.eprintf "something went wrongly\n%!"
   in
-  aux ()
+  aux (-1)
 
 let pp_row fmt row =
-  Row.pp fmt @@ Row.of_sqlite row
+  match Row.of_sqlite row with
+  | None -> ()
+  | Some line -> Row.pp fmt line
 
 let pp fmt statement =
   let _ = Sqlite3.reset statement in
