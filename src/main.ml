@@ -33,8 +33,28 @@ let main pattern cookiejar output =
   in
   Printf.eprintf "Getting the cookies for the domain pattern %S:\n%!" pattern ;
   let db = cookiejar |> make_copy |> Sqlite3.db_open ~mode:`READONLY in
+
+  let version =
+    let statement =
+      Sqlite3.prepare db
+        (Printf.sprintf "SELECT value FROM meta WHERE key = 'version' LIMIT 1")
+    in
+    match Sqlite3.step statement with
+      | Sqlite3.Rc.ROW ->
+          let row = Sqlite3.row_data statement in
+          begin match row.(0) with
+            | Sqlite3.Data.TEXT value -> Some (int_of_string value)
+            | _ -> None
+          end
+      | _ -> None
+  in
+  let decrypted_cookiejar =
+    Cookiejar.decrypt
+      (Cookie.decrypt (Value.decrypt version))
+      (Cookiejar.of_domain db pattern)
+  in
   Format.fprintf fmt "# HTTP Cookie File\n%a%!"
-    Statement.pp (Statement.of_domain db pattern) ;
+    Cookiejar.pp decrypted_cookiejar ;
   close () ;
   while (not (Sqlite3.db_close db)) do
     Printf.eprintf "database busy, trying to close again in 1 second\n%!" ;
