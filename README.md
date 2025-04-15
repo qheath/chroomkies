@@ -1,3 +1,9 @@
+DEPRECATED
+==========
+
+feature is uncluded in [yd-dlp](https://github.com/yt-dlp/yt-dlp) so I
+have no use case for this
+
 Decrypt Chrome Cookies with OCaml
 =================================
 
